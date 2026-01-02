@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Digital Herbarium</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    
+    <!-- 
+      We use a text component for nice fonts. 
+      No extra download needed, it pulls from the web. 
+    -->
+    <script src="https://unpkg.com/aframe-troika-text/dist/aframe-troika-text.min.js"></script>
+</head>
+<body>
+    <a-scene shadow="type: pcfsoft">
+
+        <!-- 1. ASSETS -->
+        <a-assets>
+            <img id="sky-lab" src="assets/images/scifi-lab.jpg">
+            <a-asset-item id="model-fern" src="assets/models/plant-fern.glb"></a-asset-item>
+            <a-asset-item id="model-flower" src="assets/models/plant-flower.glb"></a-asset-item>
+            <a-asset-item id="model-tree" src="assets/models/plant-tree.glb"></a-asset-item>
+        </a-assets>
+
+        <!-- 2. ENVIRONMENT -->
+        <a-sky src="#sky-lab" rotation="0 -90 0"></a-sky>
+        <a-entity light="type: ambient; intensity: 0.6; color: #CCC"></a-entity>
+        <a-entity light="type: directional; intensity: 0.8; castShadow: true" position="-1 4 2"></a-entity>
+        <!--                   EXHIBIT 1: THE ANCIENT FERN             -->
+        <a-entity position="-3 0 -4">
+            <!-- The Data Cube (Trigger) -->
+            <!-- Hovering this reveals the hologram -->
+            <a-box id="cube-1" 
+                   color="#4CC3D9" 
+                   position="0 1 0" 
+                   animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"
+                   class="clickable"
+                   event-set__enter="_event: mouseenter; color: #24CAFF"
+                   event-set__leave="_event: mouseleave; color: #4CC3D9">
+            </a-box>
+            <a-text value="Project Alpha" position="0 1.6 0" align="center" color="#333" scale="0.5 0.5 0.5"></a-text>
+
+            <!-- The Hologram (Hidden by default) -->
+            <a-entity id="hologram-1" visible="false" position="0 2.5 0">
+                <!-- Spinning Plant Model -->
+                <a-entity gltf-model="#model-fern" 
+                          scale="10 10 10" 
+                          animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+                </a-entity>
+                <!-- Info Panel -->
+                <a-plane color="#000" opacity="0.8" width="2" height="1" position="0 1.5 0">
+                    <a-text value="Name: Pteridophyta\nStatus: EXTINCT\nEra: Paleozoic" 
+                            align="center" color="#00FFaa"></a-text>
+                </a-plane>
+            </a-entity>
+        </a-entity>
+        <!--                   EXHIBIT 2: THE RARE FLOWER              -->
+        <a-entity position="0 0 -4">
+            <!-- The Data Cube -->
+            <a-box id="cube-2" 
+                   color="#FFC65D" 
+                   position="0 1 0" 
+                   animation="property: rotation; to: 0 -360 0; loop: true; dur: 12000; easing: linear"
+                   class="clickable">
+            </a-box>
+            <a-text value="Project Beta" position="0 1.6 0" align="center" color="#333" scale="0.5 0.5 0.5"></a-text>
+
+            <!-- The Hologram -->
+            <a-entity id="hologram-2" visible="false" position="0 2.5 0">
+                <a-entity gltf-model="#model-flower" 
+                          scale="15 15 15" 
+                          animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+                </a-entity>
+                <a-plane color="#000" opacity="0.8" width="2" height="1" position="0 1.5 0">
+                    <a-text value="Name: Gloriosa Superba\nStatus: CRITICAL\nRegion: Tropics" 
+                            align="center" color="#FFC65D"></a-text>
+                </a-plane>
+            </a-entity>
+        </a-entity>
+        <!--                   EXHIBIT 3: THE LOST TREE                -->
+        <a-entity position="3 0 -4">
+            <!-- The Data Cube -->
+            <a-box id="cube-3" 
+                   color="#EF2D5E" 
+                   position="0 1 0" 
+                   animation="property: rotation; to: 0 360 0; loop: true; dur: 9000; easing: linear"
+                   class="clickable">
+            </a-box>
+            <a-text value="Project Gamma" position="0 1.6 0" align="center" color="#333" scale="0.5 0.5 0.5"></a-text>
+
+            <!-- The Hologram -->
+            <a-entity id="hologram-3" visible="false" position="0 2.5 0">
+                <a-entity gltf-model="#model-tree" 
+                          scale="0.5 0.5 0.5" 
+                          animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear">
+                </a-entity>
+                <a-plane color="#000" opacity="0.8" width="2" height="1" position="0 1.5 0">
+                    <a-text value="Name: Sequoia\nStatus: PRESERVED\nType: Conifer" 
+                            align="center" color="#EF2D5E"></a-text>
+                </a-plane>
+            </a-entity>
+        </a-entity>
+
+
+        <!-- 4. INTERACTION & CAMERA -->
+        <a-entity position="0 1.6 0">
+            <a-camera>
+                <!-- The Cursor (Reticle) -->
+                <!-- It clicks on things when you hover over them for 1 second (fuse) -->
+                <a-cursor color="black" fuse="true" fuse-timeout="1000"
+                          animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150">
+                </a-cursor>
+            </a-camera>
+        </a-entity>
+
+        <!-- 5. JAVASCRIPT LOGIC -->
+        <script>
+            // Helper function to handle hover events
+            function setupInteraction(cubeId, hologramId) {
+                const cube = document.querySelector(cubeId);
+                const hologram = document.querySelector(hologramId);
+
+                // When mouse enters the cube
+                cube.addEventListener('mouseenter', function () {
+                    hologram.setAttribute('visible', 'true');
+                    cube.setAttribute('color', '#FFF'); // Turn cube white
+                });
+
+                // When mouse leaves the cube
+                cube.addEventListener('mouseleave', function () {
+                    hologram.setAttribute('visible', 'false');
+                    // Reset cube color based on ID (simple way)
+                    if(cubeId === '#cube-1') cube.setAttribute('color', '#4CC3D9');
+                    if(cubeId === '#cube-2') cube.setAttribute('color', '#FFC65D');
+                    if(cubeId === '#cube-3') cube.setAttribute('color', '#EF2D5E');
+                });
+            }
+
+            // Setup all 3 exhibits
+            setupInteraction('#cube-1', '#hologram-1');
+            setupInteraction('#cube-2', '#hologram-2');
+            setupInteraction('#cube-3', '#hologram-3');
+        </script>
+
+    </a-scene>
+</body>
+</html>

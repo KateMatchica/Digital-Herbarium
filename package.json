@@ -1,0 +1,12 @@
+{
+  "name": "digital-herbarium",
+  "version": "1.0.0",
+  "description": "Virtual Learning Project",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
